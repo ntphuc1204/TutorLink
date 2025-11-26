@@ -111,3 +111,38 @@ export const signOut = async (req, res) => {
         return res.status(500).json({ message: "lỗi hệ thống" });
     }
 }
+// tạo access token mới dựa trên refresh token
+export const refreshToken = async (req, res) => { 
+    try {
+        //lấy ra refresh token trong cookie
+        const token = req.cookies?.refreshToken;
+        if(!token){
+            return res.status(401).json({message: "không tìm thấy token"})
+        }
+
+        //so với refresh token trong db
+        const session = await Session.findOne({ refreshToken: token });
+        if(!session){
+            return res.status(403).json({message: "token không hợp lệ"})
+        }
+
+        //kiểm tra hết hạn
+        if(session.expireAt < new Date()){
+            return res.status(403).json({message: "token đã hết hạn"})
+        }
+
+        //tạo access token mới
+        const accessToken = jwt.sign(
+            { userId: session.userId },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: ACCESS_TOKEN_TTL }
+        );
+
+        //return access token mới
+        return res.status(200).json({ accessToken });
+
+    } catch (error) {
+        console.error('lỗi khi gọi refreshToken', error);
+        return res.status(500).json({ message: "lỗi hệ thống" });
+    }
+}
