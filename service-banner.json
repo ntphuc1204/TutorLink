@@ -1,0 +1,83 @@
+{
+  "key": "group_service_banner",
+  "title": "Service Banner",
+  "fields": [
+    {
+      "key": "field_service_banner",
+      "label": "Service Banner",
+      "name": "service_banner",
+      "type": "repeater",
+      "instructions": "Thêm các card dịch vụ",
+      "required": 0,
+      "conditional_logic": 0,
+      "wrapper": {
+        "width": "",
+        "class": "",
+        "id": ""
+      },
+      "layout": "row",
+      "button_label": "Thêm Service Card",
+      "sub_fields": [
+        {
+          "key": "field_service_title",
+          "label": "Title",
+          "name": "title",
+          "type": "text",
+          "instructions": "",
+          "required": 1,
+          "wrapper": {
+            "width": "",
+            "class": "",
+            "id": ""
+          }
+        },
+        {
+          "key": "field_service_desc",
+          "label": "Description",
+          "name": "desc",
+          "type": "textarea",
+          "instructions": "",
+          "required": 0,
+          "wrapper": {
+            "width": "",
+            "class": "",
+            "id": ""
+          },
+          "rows": 3
+        },
+        {
+          "key": "field_service_icon",
+          "label": "Icon",
+          "name": "icon",
+          "type": "image",
+          "instructions": "Upload icon",
+          "return_format": "url",
+          "library": "all",
+          "required": 1,
+          "wrapper": {
+            "width": "",
+            "class": "",
+            "id": ""
+          }
+        }
+      ]
+    }
+  ],
+  "location": [
+    [
+      {
+        "param": "page_template",
+        "operator": "==",
+        "value": "service.php"
+      }
+    ]
+  ],
+  "menu_order": 0,
+  "position": "normal",
+  "style": "default",
+  "label_placement": "top",
+  "instruction_placement": "label",
+  "hide_on_screen": "",
+  "active": true,
+  "description": ""
+}

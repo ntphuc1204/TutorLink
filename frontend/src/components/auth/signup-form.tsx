@@ -7,7 +7,6 @@ import {
   FieldDescription,
   FieldGroup,
   FieldLabel,
-  FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -16,31 +15,39 @@ import { useAuthStore } from "@/stores/useAuthStore";
 import { useNavigate } from "react-router";
 
 const SignUpSchema = z.object({
-  firstName: z.string().min(1, "Tên băt buộc phải có"),
-  lastName: z.string().min(1, "Họ băt buộc phải có"),
+  firstName: z.string().min(1, "Tên bắt buộc phải có"),
+  lastName: z.string().min(1, "Họ bắt buộc phải có"),
   username: z.string().min(3, "Tên đăng nhập có ít nhất 3 ký tự"),
   email: z.email("Email không hợp lệ"),
   password: z.string().min(6, "Mật khẩu phải có ít nhất 6 ký tự"),
+  role: z.enum(["student", "teacher", "admin"], {
+    message: "Vui lòng chọn vai trò",
+  }),
 });
+
 type SignUpFormValues = z.infer<typeof SignUpSchema>;
+
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const { signUp } = useAuthStore();
   const navigate = useNavigate();
+
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<SignUpFormValues>({
     resolver: zodResolver(SignUpSchema),
   });
+
   const onSubmit = async (data: SignUpFormValues) => {
-    const { firstName, lastName, username, email, password } = data;
-    await signUp(username, password, email, firstName, lastName);
+    const { firstName, lastName, username, email, password, role } = data;
+    await signUp(username, password, email, firstName, lastName, role);
     navigate("/signin");
   };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0 border-[hsl(var(--border-soft-blue))]">
@@ -115,22 +122,42 @@ export function SignupForm({
                   </p>
                 )}
               </Field>
+
               <Field>
-                <Field>
-                  <FieldLabel htmlFor="password">Mật khẩu</FieldLabel>
-                  <Input
-                    className="rounded-[0.4rem] border-[hsl(var(--border-soft-blue))]"
-                    id="password"
-                    type="password"
-                    {...register("password")}
-                  />
-                  {errors.password && (
-                    <p className="text-sm text-red-600 mt-1">
-                      {errors.password.message}
-                    </p>
-                  )}
-                </Field>
+                <FieldLabel htmlFor="password">Mật khẩu</FieldLabel>
+                <Input
+                  className="rounded-[0.4rem] border-[hsl(var(--border-soft-blue))]"
+                  id="password"
+                  type="password"
+                  {...register("password")}
+                />
+                {errors.password && (
+                  <p className="text-sm text-red-600 mt-1">
+                    {errors.password.message}
+                  </p>
+                )}
               </Field>
+
+              {/* ROLE FIELD */}
+              <Field>
+                <FieldLabel>Vai trò</FieldLabel>
+                <select
+                  className="border-[hsl(var(--border-soft-blue))] rounded-[0.4rem] rounded-md px-2 h-9"
+                  {...register("role")}
+                >
+                  <option value="">-- Chọn vai trò --</option>
+                  <option value="student">Student</option>
+                  <option value="teacher">Teacher</option>
+                  <option value="admin">Admin</option>
+                </select>
+
+                {errors.role && (
+                  <p className="text-sm text-red-600 mt-1">
+                    {errors.role.message}
+                  </p>
+                )}
+              </Field>
+
               <Field>
                 <Button type="submit" className="rounded-[0.4rem]">
                   Tạo Tài Khoản
@@ -141,7 +168,7 @@ export function SignupForm({
           <div className="bg-muted relative hidden md:block">
             <img
               src="/sign-up.png"
-              alt="Image"
+              alt="sign up"
               className="absolute top-1/2 -translate-y-1/2 object-cover dark:brightness-[0.2] dark:grayscale"
             />
           </div>

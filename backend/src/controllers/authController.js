@@ -8,37 +8,41 @@ const ACCESS_TOKEN_TTL = "30m";
 const REFRESH_TOKEN_TTL = 14*24*60*60*1000;
 export const signUp = async (req, res) => {
     try {
-        const { username, password, email, firstName, lastName } = req.body;
-        if (!username || !password || !email || !firstName || !lastName) {
-            return res
-                .status(400)
-                .json({
-                    massage:"không thể thiếu username, password, email, firstName, lastName",
-                })
-        }
-        //check trùng username
-        const duplicate = await User.findOne({ username });
-        if (duplicate) {
-            return res.status(409).json({message: "username đã tồn tại "})
-        }
-
-        //mã hóa password
-        const hashedPassword = await bcrypt.hash(password, 10); // salt = 10
-
-        //tạo user mới
-        await User.create({
-            username,
-            hashedPassword,
-            email,
-            displayName: `${firstName} ${lastName}`
+      const { username, password, email, firstName, lastName, role } = req.body;
+  
+      if (!username || !password || !email || !firstName || !lastName) {
+        return res.status(400).json({
+          message: "không thể thiếu username, password, email, firstName, lastName",
         });
-
-        return res.sendStatus(204);
+      }
+  
+      const duplicate = await User.findOne({ username });
+      if (duplicate) {
+        return res.status(409).json({ message: "username đã tồn tại" });
+      }
+  
+      const hashedPassword = await bcrypt.hash(password, 10);
+  
+      // validate role (chỉ chấp nhận 3 loại)
+      const allowedRoles = ["student", "teacher", "admin"];
+      const finalRole = allowedRoles.includes(role) ? role : "student";
+  
+      await User.create({
+        username,
+        hashedPassword,
+        email,
+        displayName: `${firstName} ${lastName}`,
+        role: finalRole,
+      });
+  
+      return res.sendStatus(204);
+  
     } catch (error) {
-        console.error('lỗi khi gọi signUp', error);
-        return res.status(500).json({ message: "lỗi hệ thống" });
+      console.error("lỗi khi gọi signUp", error);
+      return res.status(500).json({ message: "lỗi hệ thống" });
     }
-};
+  };
+  
 export const signIn = async (req, res) => {
     try {
         // lấy inputs
