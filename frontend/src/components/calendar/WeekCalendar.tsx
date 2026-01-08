@@ -75,14 +75,35 @@ const mockEvents: CalendarEvent[] = [
     start: dayjs("2025-12-17T12:00"),
     end: dayjs("2025-12-17T12:45"),
   },
+  {
+    id: 8,
+    title: "Học tiếng Anh",
+    subject: "english",
+    start: dayjs("2025-12-17T15:30"),
+    end: dayjs("2025-12-17T17:45"),
+  },
+  {
+    id: 9,
+    title: "Học Toán",
+    subject: "math",
+    start: dayjs("2025-12-18T15:30"),
+    end: dayjs("2025-12-18T17:00"),
+  },
+  {
+    id: 10,
+    title: "Học lập trình",
+    subject: "programming",
+    start: dayjs("2025-12-15T15:00"),
+    end: dayjs("2025-12-15T16:30"),
+  },
 ];
 
 export const WeekCalendar = ({ selected }: { selected: Dayjs }) => {
   const weekDays = generateWeekDays(selected);
 
   return (
-    <div className="flex-1 p-0 md:p-4 h-full bg-[#F2F8FF]">
-      <div className="h-[80%] overflow-y-auto p-0 md:p-4 relative md:h-[100%] md:w-full">
+    <div className="flex-1 p-0 h-full bg-[#F2F8FF]">
+      <div className="h-[80%] max-h-[80vh] overflow-y-auto p-0 relative md:h-[100%] md:w-full">
         {/* HEADER */}
         <div className="grid grid-cols-7 text-center py-3 bg-white sticky top-0 z-10 shadow-[0_4px_10px_0_rgba(135,195,255,0.5)] pl-[2.4rem]">
           {weekDays.map((day) => (
@@ -133,7 +154,12 @@ export const WeekCalendar = ({ selected }: { selected: Dayjs }) => {
                   .filter((e) => e.start.isSame(day, "day"))
                   .map((e) => {
                     const startHour = e.start.hour() - 7;
+                    const startMinute = e.start.minute();
                     const duration = e.end.diff(e.start, "minute") / 60;
+
+                    const top =
+                      startHour * HOUR_HEIGHT +
+                      (startMinute / 60) * HOUR_HEIGHT;
 
                     return (
                       <div
@@ -145,7 +171,7 @@ export const WeekCalendar = ({ selected }: { selected: Dayjs }) => {
                         "
                         style={{
                           background: subjectColors[e.subject] || "#80CFFF",
-                          top: startHour * HOUR_HEIGHT,
+                          top,
                           height: duration * HOUR_HEIGHT,
                         }}
                       >

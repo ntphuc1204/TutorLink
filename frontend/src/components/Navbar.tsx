@@ -7,6 +7,7 @@ interface NavProps {
   setSelectedDate: (d: Dayjs) => void;
   activePage: string;
   setActivePage: (p: string) => void;
+  isAdmin?: boolean; // 👈 thêm prop này
 }
 
 const Nav = ({
@@ -14,8 +15,16 @@ const Nav = ({
   setSelectedDate,
   activePage,
   setActivePage,
+  isAdmin = false,
 }: NavProps) => {
   const [openCalendar, setOpenCalendar] = useState(false);
+
+  // 👇 danh sách menu — nếu không phải admin thì bỏ "Quản lý user"
+  const menuItems = [
+    "Lịch tuần",
+    "Cài đặt",
+    ...(isAdmin ? ["Quản lý user"] : []),
+  ];
 
   return (
     <nav
@@ -28,36 +37,31 @@ const Nav = ({
         relative
       "
     >
-      {/* Desktop: hiển thị MiniCalendar */}
+      {/* Desktop calendar */}
       <div className="hidden block">
         <MiniCalendar selected={selectedDate} setSelected={setSelectedDate} />
       </div>
-      {/* Mobile: nút mở lịch */}
+
+      {/* Mobile mini calendar */}
       {activePage === "Lịch tuần" && (
         <div className=" relative">
           <button
-            className="
-            px-3 py-2 border rounded-lg 
-            text-[#2F4858] bg-white shadow-sm
-          "
+            className="px-3 py-2 border rounded-lg text-[#2F4858] bg-white shadow-sm"
             onClick={() => setOpenCalendar(!openCalendar)}
           >
             {selectedDate.format("DD/MM/YYYY")}
           </button>
 
-          {/* Popup MiniCalendar trên mobile */}
           {openCalendar && (
             <div
-              className="
-              absolute top-12 left-0 z-20  w-[15rem]
-              bg-white shadow-xl border rounded-lg p-2
-            "
+              className="absolute top-12 left-0 z-20  w-[15rem]
+              bg-white shadow-xl border rounded-lg p-2"
             >
               <MiniCalendar
                 selected={selectedDate}
                 setSelected={(d) => {
                   setSelectedDate(d);
-                  setOpenCalendar(false); // Đóng popup sau khi chọn
+                  setOpenCalendar(false);
                 }}
               />
             </div>
@@ -65,9 +69,10 @@ const Nav = ({
         </div>
       )}
 
+      {/* Menu */}
       <div className="mt-0 md:mt-4 flex-1">
         <ul className="flex md:flex-col flex-row md:space-y-1 space-x-2 md:space-x-0">
-          {["Dashboard", "Lịch tuần", "Cài đặt"].map((item) => (
+          {menuItems.map((item) => (
             <li
               key={item}
               onClick={() => setActivePage(item)}

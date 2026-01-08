@@ -6,10 +6,13 @@ import userRoute from "./routes/userRoute.js"
 import cookieParser from "cookie-parser"
 import { protectedRoute } from "./middlewares/authMiddleware.js";
 import cors from "cors";
+import path from "path";
+
+
 dotenv.config();
 
 const app = express();
-
+app.use("/uploads", express.static("uploads"));
 const PORT = process.env.PORT || 5001;
 
 //middlewares
